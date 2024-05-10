@@ -31,6 +31,9 @@ import cufflinks as cf
 from collections import defaultdict
 from collections import Counter
 
+# Use a pipeline as a high-level helper
+from transformers import pipeline
+model = pipeline("text-classification", model="cardiffnlp/twitter-roberta-base-sentiment-latest")
 
 def clean_text(text):
     # Make text lowercase
@@ -106,6 +109,8 @@ def plot_bigram(text,file_name):
     # Generate the bar chart from reviews
     freq_dict = defaultdict(int)
     for sentence in text:
+        encoded_input = tokenizer(sentence, return_tensors='pt')
+        # sentiment = model(sentence)
         for word in generate_ngrams(sentence,2):
             freq_dict[word] += 1
 
@@ -126,6 +131,7 @@ def plot_bigram(text,file_name):
 
     fig.update_layout(height=900, width=1000, title="High Frequency Words")
     st.plotly_chart(fig, use_container_width=True)
+
 
 
 def process_reviews(raw_reviews, year, month, filename):
